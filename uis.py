@@ -32,7 +32,10 @@ class UIS:
     '''
         in order to get tags of event
     '''
-
+    logger_rpc = RpcProxy('logger')
+    '''
+        used to track logs
+    '''
     l_weight = 1.0  # the weight of a like
     f_weight = 5.0  # assume that one fav is equal to 5 likes of events with the same tags
     q_weight = 50.0  # and one questionnaire is equal to 50 likes
@@ -232,6 +235,8 @@ class UIS:
                 - all user's tags with their weights
                 dispatch to the ranking
         '''
+        self.logger_rpc.log(self.name, self.create_new_q.__name__, questionnaire, "Info", "Creating questionnaire")
+
         data = self._add_questionnaire_data(questionnaire)
         self.dispatch('make_top', data)
 
@@ -246,6 +251,8 @@ class UIS:
                 user_id and user's tags with their weights.
                 dispatch to the ranking
         '''
+        self.logger_rpc.log(self.name, self.add_like.__name__, like_data, "Info", "Saving like")
+
         # get event's tags
         event_tags = self.event_das_rpc.get_tags_by_id(like_data[1])
 
@@ -264,6 +271,8 @@ class UIS:
                 user_id and user's tags with their weights.
                 dispatch to the ranking
         '''
+        self.logger_rpc.log(self.name, self.cancel_like.__name__, like_data, "Info", "Cancelling like")
+
         # get event's tags
         event_tags = self.event_das_rpc.get_tags_by_id(like_data[1])
 
@@ -283,6 +292,8 @@ class UIS:
                 user_id and user's tags with their weights.
                 dispatch to the ranking
         '''
+        self.logger_rpc.log(self.name, self.add_fav.__name__, fav_data, "Info", "Add to favorite")
+
         # get event's tags
         event_tags = self.event_das_rpc.get_tags_by_id(fav_data[1])
 
@@ -301,6 +312,8 @@ class UIS:
                 user_id and user's tags with their weights.
                 dispatch to the ranking
         '''
+        self.logger_rpc.log(self.name, self.cancel_fav.__name__, fav_data, "Info", "Cancelling favorite")
+
         # get event's tags
         event_tags = self.event_das_rpc.get_tags_by_id(fav_data[1])
 
