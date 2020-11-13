@@ -44,9 +44,9 @@ class UIS:
 
     def _add_questionnaire_data(self, new_q):
         '''
-            parameters: new_q - [user_id, [tag_1, tag_2, ..., tag_m]] -\
+            Args: new_q - [user_id, [tag_1, tag_2, ..., tag_m]] -\
                 a questionnaire of the user
-            returns: [user_id, {tag_1: w_1, tag_2: w_2, ..., tag_n: w_n}] -\
+            Returns: [user_id, {tag_1: w_1, tag_2: w_2, ..., tag_n: w_n}] -\
                 - all user's tags with their weights
         '''
 
@@ -116,13 +116,13 @@ class UIS:
 
     def _update_reaction_data(self, user_id, event_tags, w, cancel=False):
         '''
-        parameters: 
+        Args: 
             user_id - id of the user
             event_tags - [event_1_tag, ..., event_n_tag] - \
                 - list of tags related to event that we have reaction on
             w - float; means weight of the reaction
             cancel - bool; True if we get reaction back, False otherwise
-        returns:
+        Returns:
             [user_id, {'<tag_name_1>': w_1, ..., '<tag_name_n>': w_n}]
             user_id and user's tags with their weights
             or None if user is not presented in database
@@ -131,12 +131,10 @@ class UIS:
                 the weight of the tag equals to probability of the fact that
                 that tag is presented in a random chosen event that the user has highlighted
             for that:
-
             assume that all tags are of the same authority and use pattern:
                 total_weight = (total_weight*count +|- \
                                 new_weight_of_this_tag)/(count +|- w)
                 count +|- w
-
             where `w` is weight of the reaction
             and +|- depends on adding or cancelling reaction
         '''
@@ -204,8 +202,8 @@ class UIS:
 
     def _get_weights_by_id(self, user_id):
         '''
-            parameters: user_id - id of the user
-            returns: 
+            Args: user_id - id of the user
+            Returns: 
                 None if that user is not presented in database
                 {'<tag_name_1>': w_1, ..., '<tag_name_n>': w_n} - \
                     - user's tags with their weights otherwise
@@ -229,13 +227,14 @@ class UIS:
     @rpc
     def create_new_q(self, questionnaire):
         '''
-            parameters: questionnaire - [user_id, [tag_1, tag_2, ..., tag_m]] -\
+            Args: questionnaire - [user_id, [tag_1, tag_2, ..., tag_m]] -\
                 a questionnaire of the user
-            returns: [user_id, {tag_1: w_1, tag_2: w_2, ..., tag_n: w_n}] -\
-                - all user's tags with their weights
-                dispatch to the ranking
+            Dispatch to the ranking: 
+                [user_id, {tag_1: w_1, tag_2: w_2, ..., tag_n: w_n}] -\
+                    - all user's tags with their weights
         '''
-        self.logger_rpc.log(self.name, self.create_new_q.__name__, questionnaire, "Info", "Creating questionnaire")
+        self.logger_rpc.log(self.name, self.create_new_q.__name__,
+                            questionnaire, "Info", "Creating questionnaire")
 
         data = self._add_questionnaire_data(questionnaire)
         self.dispatch('make_top', data)
@@ -246,12 +245,13 @@ class UIS:
     def add_like(self, like_data):
         '''
             like
-            parameters: like_data - [user_id, event_id]
-            returns: [user_id, {'<tag_name_1>': w_1, ..., '<tag_name_n>': w_n}] -\
-                user_id and user's tags with their weights.
-                dispatch to the ranking
+            Args: like_data - [user_id, event_id]
+            Dispatch to the ranking: 
+                [user_id, {'<tag_name_1>': w_1, ..., '<tag_name_n>': w_n}] -\
+                    user_id and user's tags with their weights.
         '''
-        self.logger_rpc.log(self.name, self.add_like.__name__, like_data, "Info", "Saving like")
+        self.logger_rpc.log(self.name, self.add_like.__name__,
+                            like_data, "Info", "Saving like")
 
         # get event's tags
         event_tags = self.event_das_rpc.get_tags_by_id(like_data[1])
@@ -266,12 +266,13 @@ class UIS:
     def cancel_like(self, like_data):
         '''
             cancel like
-            parameters: like_data - [user_id, event_id]
-            returns: [user_id, {'<tag_name_1>': w_1, ..., '<tag_name_n>': w_n}] -\
-                user_id and user's tags with their weights.
-                dispatch to the ranking
+            Args: like_data - [user_id, event_id]
+            Dispatch to the ranking: 
+                [user_id, {'<tag_name_1>': w_1, ..., '<tag_name_n>': w_n}] -\
+                    user_id and user's tags with their weights.
         '''
-        self.logger_rpc.log(self.name, self.cancel_like.__name__, like_data, "Info", "Cancelling like")
+        self.logger_rpc.log(self.name, self.cancel_like.__name__,
+                            like_data, "Info", "Cancelling like")
 
         # get event's tags
         event_tags = self.event_das_rpc.get_tags_by_id(like_data[1])
@@ -287,12 +288,13 @@ class UIS:
     def add_fav(self, fav_data):
         '''
             add to favorites
-            parameters: fav_data - [user_id, event_id]
-            returns: [user_id, {'<tag_name_1>': w_1, ..., '<tag_name_n>': w_n}] -\
-                user_id and user's tags with their weights.
-                dispatch to the ranking
+            Args: fav_data - [user_id, event_id]
+            Dispatch to the ranking: 
+                [user_id, {'<tag_name_1>': w_1, ..., '<tag_name_n>': w_n}] -\
+                    user_id and user's tags with their weights.
         '''
-        self.logger_rpc.log(self.name, self.add_fav.__name__, fav_data, "Info", "Add to favorite")
+        self.logger_rpc.log(self.name, self.add_fav.__name__,
+                            fav_data, "Info", "Add to favorite")
 
         # get event's tags
         event_tags = self.event_das_rpc.get_tags_by_id(fav_data[1])
@@ -307,12 +309,13 @@ class UIS:
     def cancel_fav(self, fav_data):
         '''
             remove from favorites
-            parameters: fav_data - [user_id, event_id]
-            returns: [user_id, {'<tag_name_1>': w_1, ..., '<tag_name_n>': w_n}] -\
-                user_id and user's tags with their weights.
-                dispatch to the ranking
+            Args: fav_data - [user_id, event_id]
+            Dispatch to the ranking: 
+                [user_id, {'<tag_name_1>': w_1, ..., '<tag_name_n>': w_n}] -\
+                    user_id and user's tags with their weights.
         '''
-        self.logger_rpc.log(self.name, self.cancel_fav.__name__, fav_data, "Info", "Cancelling favorite")
+        self.logger_rpc.log(self.name, self.cancel_fav.__name__,
+                            fav_data, "Info", "Cancelling favorite")
 
         # get event's tags
         event_tags = self.event_das_rpc.get_tags_by_id(fav_data[1])
@@ -325,8 +328,8 @@ class UIS:
     @rpc
     def get_weights_by_id(self, user_id):
         '''
-            parameters: user_id - id of the user
-            returns: 
+            Args: user_id - id of the user
+            Returns: 
                 None if that user is not presented in database
                 {'<tag_name_1>': w_1, ..., '<tag_name_n>': w_n} - \
                     - user's tags with their weights otherwise
@@ -340,11 +343,9 @@ class UIS:
         '''
             POST http://localhost:8000/newq HTTP/1.1
             Content-Type: application/json
-
             [user_id, [
                 'tag_1', 'tag_2', ..., 'tag_m'
             ]]
-
         '''
         content = request.get_data(as_text=True)
         questionnaire = json.loads(content)
@@ -357,9 +358,7 @@ class UIS:
         '''
             POST http://localhost:8000/got_like HTTP/1.1
             Content-Type: application/json
-
             [user_id, event_id]
-
         '''
         content = request.get_data(as_text=True)
         like_message = json.loads(content)
@@ -377,9 +376,7 @@ class UIS:
         '''
             POST http://localhost:8000/cancel_like HTTP/1.1
             Content-Type: application/json
-
             [user_id, event_id]
-
         '''
         content = request.get_data(as_text=True)
         like_message = json.loads(content)
@@ -397,9 +394,7 @@ class UIS:
         '''
             POST http://localhost:8000/got_fav HTTP/1.1
             Content-Type: application/json
-
             [user_id, event_id]
-
         '''
         content = request.get_data(as_text=True)
         fav_message = json.loads(content)
@@ -417,9 +412,7 @@ class UIS:
         '''
             POST http://localhost:8000/cancel_fav HTTP/1.1
             Content-Type: application/json
-
             [user_id, event_id]
-
         '''
         content = request.get_data(as_text=True)
         fav_message = json.loads(content)
@@ -435,8 +428,8 @@ class UIS:
     @http('GET', '/get_weights/<id>')
     def get_weights_by_id_http(self, request: Request, user_id):
         '''
-            parameters: user_id - id of the user
-            returns: 
+            Args: user_id - id of the user
+            Returns: 
                 None if that user is not presented in database
                 {'<tag_name_1>': w_1, ..., '<tag_name_n>': w_n} - \
                     - user's tags with their weights otherwise
