@@ -114,7 +114,6 @@ Content-Type: application/json
 
 ```rst
 GET http://localhost:8000/get_weights/<id> HTTP/1.1
-Content-Type: application/json
 ```
 
 ## Развертывание и запуск
