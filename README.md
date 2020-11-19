@@ -61,6 +61,26 @@ Args: user_id - id of the user
 Returns: {'<tag_name_1>': w_1, ..., '<tag_name_n>': w_n}
 ```
 
+Получить булевский список:
+
+```bat
+n.rpc.uis.get_bool_list(user_id)
+
+Args: user_id - id of the user
+Returns: [True, False, False, ...] if user is presented in db and None otherwise
+```
+
+Сохранить булевский список:
+
+```bat
+n.rpc.uis.save_bool_list(user_id, bool_list)
+
+Args: 
+    user_id - id of the user,
+    bool_list - list like [True, False, False, ...]
+Returns: nothing
+```
+
 ### HTTP
 
 Новая анкета или обновление данных по анкете:
