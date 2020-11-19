@@ -21,6 +21,12 @@ class UIS:
                         where `w_i` is a weight of the tag named 'tag_name_i'
                 'count_changes' -\
                     - how many changes of weights the user in effect had done
+                'q_tags' - tags of current questionnaire
+        
+        name of collection: 'bool_interests';
+        columns:
+            '_id' - id of the user
+            'bool_list' - the list of True, False
     '''
 
     dispatch = EventDispatcher()
@@ -220,6 +226,38 @@ class UIS:
         else:
             return None
 
+    def _bool_list_action(self, user_id, is_get, bool_list=[]):
+        '''
+        Args:
+            user_id - id of the user
+            is_get - bool - True if the func called to get list, False to save list
+            bool_list the list lke [True, False, False, ...]
+        Returns: 
+            if is_get - current bool_list or None if user is not presented
+            else nothing
+        '''
+
+        collection = self.db['bool_interests']
+        is_user = collection.find_one(
+            {'_id': user_id},
+            {'bool_list': 1}
+        )
+
+        if is_get:
+            if is_user:
+                return is_user['bool_list']
+            return None
+
+        if is_user:
+            collection.update_one(
+                {'_id': user_id},
+                {'$set': {'bool_list': bool_list}}
+            )
+        else:
+            collection.insert_one(
+                {'_id': user_id, 'bool_list': bool_list}
+            )
+
     # API
 
     # rpc
@@ -335,6 +373,25 @@ class UIS:
                     - user's tags with their weights otherwise
         '''
         return self._get_weights_by_id(user_id)
+
+    @rpc
+    def save_bool_list(self, user_id, bool_list):
+        '''
+        Args:
+            user_id - id of the user
+            bool_list - [True, False, False, ...]
+        Returns: nothing
+        '''
+        self._bool_list_action(user_id, False, bool_list)
+
+    @rpc
+    def get_bool_list(self, user_id):
+        '''
+        Args:
+            user_id - id of the user
+        Returns: bool list if user is presented in db, None otherwise
+        '''
+        return(bool_list_action(user_id, True))
 
     # http
 
