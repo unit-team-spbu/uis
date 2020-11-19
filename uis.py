@@ -391,7 +391,7 @@ class UIS:
             user_id - id of the user
         Returns: bool list if user is presented in db, None otherwise
         '''
-        return(bool_list_action(user_id, True))
+        return(self._bool_list_action(user_id, True))
 
     # http
 
